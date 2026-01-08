@@ -175,6 +175,24 @@ async def list_tools() -> list[Tool]:
                 "required": ["dag_id", "dag_run_id"],
             },
         ),
+        Tool(
+            name="set_dag_state",
+            description="Pause or unpause a DAG",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "dag_id": {
+                        "type": "string",
+                        "description": "The ID of the DAG",
+                    },
+                    "is_paused": {
+                        "type": "boolean",
+                        "description": "True to pause the DAG, False to unpause it",
+                    },
+                },
+                "required": ["dag_id", "is_paused"],
+            },
+        ),
         
         # Monitoring & Status Tools
         Tool(
@@ -396,6 +414,20 @@ async def call_tool(name: str, arguments: Any) -> list[TextContent]:
             task_instances = result.get("task_instances", [])
             for ti in task_instances:
                 summary += f"- {ti['task_id']} (Try: {ti.get('try_number', 'N/A')})\n"
+            
+            return [TextContent(type="text", text=summary)]
+        
+        elif name == "set_dag_state":
+            dag_id = arguments["dag_id"]
+            is_paused = arguments["is_paused"]
+            
+            body = {"is_paused": is_paused}
+            result = await make_api_request("PATCH", f"dags/{dag_id}", json_data=body)
+            
+            state_str = "⏸️ PAUSED" if is_paused else "▶️ ACTIVE"
+            summary = f"✅ DAG '{dag_id}' is now {state_str}\n\n"
+            summary += f"- **Description**: {result.get('description', 'N/A')}\n"
+            summary += f"- **Schedule**: {result.get('schedule_interval', 'N/A')}\n"
             
             return [TextContent(type="text", text=summary)]
         

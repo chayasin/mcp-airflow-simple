@@ -99,6 +99,15 @@ Clear/retry a DAG run (resets failed tasks).
 }
 ```
 
+#### `set_dag_state`
+Pause or unpause a DAG.
+```json
+{
+  "dag_id": "example_dag",
+  "is_paused": true
+}
+```
+
 ### Monitoring & Status
 
 #### `get_dag_runs`
