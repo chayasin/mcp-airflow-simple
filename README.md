@@ -29,6 +29,22 @@ it will return a token, copy the token and paste it to the .env file
 pip install -r requirements.txt
 ```
 
+### 4. config the MCP server
+
+```json
+{
+  "mcpServers": {
+    "airflow": {
+      "command": "python",
+      "args": ["c:\\{spath_to_your_folder}\\mcp-airflow-simple\\server.py"],
+      "env": {
+        "GIT_AUTO_UPDATE": "true"
+      }
+    }
+  }
+}
+```
+
 
 ## Features
 
