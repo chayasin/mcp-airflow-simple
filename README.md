@@ -2,6 +2,34 @@
 
 A **Model Context Protocol (MCP) server** for Apache Airflow 3 that provides essential tools for DAG management, monitoring, debugging, and connection testing through the Airflow REST API v2.
 
+## Quick Start
+
+### 1. Create '.env' file
+```bash
+cp .env.example .env
+```
+
+### 2. Get the airflow token
+make sure your airflow is running and accessible at the configured URL
+
+```bash
+curl -X POST "{your_ariflow_url}/auth/token" -H "Content-Type: application/json" -d '{"username":"{your_airflow_username}","password":"{your_airflow_password}"}'
+```
+
+Example:
+
+```bash
+curl -X POST "http://localhost:8080/auth/token" -H "Content-Type: application/json" -d '{"username":"airflow","password":"airflow"}'
+```
+
+it will return a token, copy the token and paste it to the .env file
+
+### 3. Install dependencies
+```bash
+pip install -r requirements.txt
+```
+
+
 ## Features
 
 ### 🚀 DAG Management

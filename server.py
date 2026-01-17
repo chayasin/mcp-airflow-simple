@@ -6,6 +6,8 @@ Provides tools for DAG management, monitoring, debugging, and connection testing
 
 import asyncio
 import os
+import subprocess
+from pathlib import Path
 from typing import Any, Optional
 from datetime import datetime
 
@@ -631,8 +633,75 @@ async def call_tool(name: str, arguments: Any) -> list[TextContent]:
         return [TextContent(type="text", text=error_msg)]
 
 
+def auto_update_check():
+    """Check for updates on startup"""
+    if os.getenv("GIT_AUTO_UPDATE") != "true":
+        return  # Skip if not enabled
+    
+    try:
+        repo_path = Path(__file__).parent
+        
+        # Fetch latest from remote
+        result = subprocess.run(
+            ["git", "fetch"], 
+            cwd=repo_path, 
+            capture_output=True,
+            timeout=10
+        )
+        
+        if result.returncode != 0:
+            print(f"Warning: git fetch failed: {result.stderr.decode()}")
+            return
+        
+        # Check if behind remote
+        result = subprocess.run(
+            ["git", "status", "-uno", "-sb"], 
+            cwd=repo_path, 
+            capture_output=True, 
+            text=True,
+            timeout=5
+        )
+        
+        if result.returncode != 0:
+            print(f"Warning: git status check failed")
+            return
+        
+        # Look for "behind" indicator
+        if "behind" in result.stdout.lower():
+            print("📥 Update available, pulling latest version...")
+            
+            pull_result = subprocess.run(
+                ["git", "pull", "--ff-only"],  # Only fast-forward to be safe
+                cwd=repo_path,
+                capture_output=True,
+                text=True,
+                timeout=30
+            )
+            
+            if pull_result.returncode == 0:
+                print("✅ Successfully updated to latest version!")
+                print("⚠️  Please restart Claude Desktop to use the new version")
+            else:
+                print(f"❌ Update failed: {pull_result.stderr}")
+        else:
+            print("✅ Already up to date")
+                
+    except subprocess.TimeoutExpired:
+        print("⚠️  Update check timed out")
+    except FileNotFoundError:
+        print("⚠️  Git not found - skipping auto-update")
+    except Exception as e:
+        # Don't crash the server if update fails
+        print(f"⚠️  Auto-update check failed: {str(e)}")
+
+
+
 async def main():
     """Run the MCP server."""
+
+    # update the code
+    auto_update_check()
+
     async with mcp.server.stdio.stdio_server() as (read_stream, write_stream):
         await app.run(
             read_stream,
