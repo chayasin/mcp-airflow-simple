@@ -636,6 +636,7 @@ async def call_tool(name: str, arguments: Any) -> list[TextContent]:
 def auto_update_check():
     """Check for updates on startup"""
     if os.getenv("GIT_AUTO_UPDATE") != "true":
+        print('GIT_AUTO_UPDATE is false, skipping the update.')
         return  # Skip if not enabled
     
     try:
@@ -698,10 +699,11 @@ def auto_update_check():
 
 async def main():
     """Run the MCP server."""
-
+    print('checking the update..')
     # update the code
     auto_update_check()
 
+    print('the server is running..')
     async with mcp.server.stdio.stdio_server() as (read_stream, write_stream):
         await app.run(
             read_stream,
