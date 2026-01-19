@@ -69,7 +69,7 @@ pip install -r requirements.txt
 - Test connection accessibility
 
 ### 🏥 Health Checks
-- Monitor Airflow scheduler and database status
+- Monitor Airflow Scheduler, Metadatabase, Triggerer, and DagProcessor status
 
 ## Installation
 
@@ -227,7 +227,7 @@ Test connection accessibility.
 ### Health Check
 
 #### `check_health`
-Check Airflow system health.
+Check Airflow system health (includes Metadatabase, Scheduler, Triggerer, and DagProcessor).
 ```json
 {}
 ```

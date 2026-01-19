@@ -604,24 +604,39 @@ async def call_tool(name: str, arguments: Any) -> list[TextContent]:
         
         # Health Check Tool
         elif name == "check_health":
-            result = await make_api_request("GET", "health")
+            # Using the monitor/health endpoint which provides status for all components
+            # Ref: https://airflow.apache.org/docs/apache-airflow/stable/administration-and-deployment/logging-monitoring/check-health.html
+            result = await make_api_request("GET", "monitor/health")
             
             summary = "🏥 Airflow Health Status:\n\n"
             
-            metadatabase = result.get("metadatabase", {})
-            scheduler = result.get("scheduler", {})
+            # Components to check
+            components = [
+                ("metadatabase", "Metadatabase"),
+                ("scheduler", "Scheduler"),
+                ("triggerer", "Triggerer"),
+                ("dag_processor", "Dag Processor")
+            ]
             
-            db_status = metadatabase.get("status", "unknown")
-            scheduler_status = scheduler.get("status", "unknown")
-            
-            db_emoji = "✅" if db_status == "healthy" else "❌"
-            scheduler_emoji = "✅" if scheduler_status == "healthy" else "❌"
-            
-            summary += f"{db_emoji} **Metadatabase**: {db_status}\n"
-            summary += f"{scheduler_emoji} **Scheduler**: {scheduler_status}\n"
-            
-            if scheduler.get("latest_scheduler_heartbeat"):
-                summary += f"\n📅 Latest Scheduler Heartbeat: {scheduler['latest_scheduler_heartbeat']}\n"
+            for key, label in components:
+                component_data = result.get(key)
+                
+                # Some components might not be present in the response if not configured/running
+                if component_data:
+                    status = component_data.get("status", "unknown")
+                    # heartbeat timestamp if available
+                    heartbeatkey = f"latest_{key}_heartbeat"
+                    heartbeat = component_data.get(heartbeatkey)
+                    
+                    emoji = "✅" if status == "healthy" else "❌"
+                    summary += f"{emoji} **{label}**: {status}\n"
+                    
+                    if heartbeat:
+                        summary += f"   Last Heartbeat: {heartbeat}\n"
+                else:
+                    # Optional components like triggerer might be missing
+                    if key not in ["metadatabase", "scheduler"]:
+                        summary += f"⚪ **{label}**: Not active/configured\n"
             
             return [TextContent(type="text", text=summary)]
         
