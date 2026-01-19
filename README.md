@@ -9,7 +9,15 @@ A **Model Context Protocol (MCP) server** for Apache Airflow 3 that provides ess
 cp .env.example .env
 ```
 
-### 2. Get the airflow token
+### 2. Install dependencies
+```bash
+pip install -r requirements.txt
+```
+
+it will return a token, copy the token and paste it to the .env file
+
+### 3. Get the airflow token
+
 make sure your airflow is running and accessible at the configured URL
 
 ```bash
@@ -20,13 +28,6 @@ Example:
 
 ```bash
 curl -X POST "http://localhost:8080/auth/token" -H "Content-Type: application/json" -d '{"username":"airflow","password":"airflow"}'
-```
-
-it will return a token, copy the token and paste it to the .env file
-
-### 3. Install dependencies
-```bash
-pip install -r requirements.txt
 ```
 
 ### 4. config the MCP server
