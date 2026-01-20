@@ -37,7 +37,7 @@ curl -X POST "http://localhost:8080/auth/token" -H "Content-Type: application/js
   "mcpServers": {
     "airflow": {
       "command": "python",
-      "args": ["c:\\{spath_to_your_folder}\\mcp-airflow-simple\\server.py"],
+      "args": ["c:\\{path_to_your_folder}\\mcp-airflow-simple\\server.py"],
       "env": {
         "GIT_AUTO_UPDATE": "true"
       }
@@ -253,7 +253,7 @@ To use this server with MCP clients like Claude Desktop, add to your MCP configu
   "mcpServers": {
     "airflow": {
       "command": "python",
-      "args": ["c:\\Users\\ChayasinSaetia\\chayasin-laptop\\mcp-airflow\\server.py"],
+      "args": ["c:\\{path_to_your_folder}\\mcp-airflow\\server.py"],
       "env": {
         "airflow_api_url": "http://localhost:8080/api/v2",
         "airflow_jwt_token": "your_token_here"
@@ -269,7 +269,7 @@ To use this server with MCP clients like Claude Desktop, add to your MCP configu
   "mcpServers": {
     "airflow": {
       "command": "python3",
-      "args": ["/path/to/mcp-airflow/server.py"]
+      "args": ["{path_to_your_folder}/mcp-airflow/server.py"]
     }
   }
 }
