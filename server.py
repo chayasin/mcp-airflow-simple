@@ -328,6 +328,16 @@ async def list_tools() -> list[Tool]:
             },
         ),
         
+        # Knowledge Tools
+        Tool(
+            name="get_airflow3_skill",
+            description="Get Airflow 3 development guidelines and syntax changes",
+            inputSchema={
+                "type": "object",
+                "properties": {},
+            },
+        ),
+        
         # Health Check Tool
         Tool(
             name="check_health",
@@ -601,6 +611,15 @@ async def call_tool(name: str, arguments: Any) -> list[TextContent]:
                 summary += f"Error: {str(e)}\n"
                 
                 return [TextContent(type="text", text=summary)]
+        
+        # Knowledge Tools
+        elif name == "get_airflow3_skill":
+            skill_path = Path(__file__).parent / "skill-airflow3.md"
+            try:
+                content = skill_path.read_text(encoding="utf-8")
+                return [TextContent(type="text", text=content)]
+            except Exception as e:
+                return [TextContent(type="text", text=f"Error reading skill file: {e}")]
         
         # Health Check Tool
         elif name == "check_health":
