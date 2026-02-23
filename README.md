@@ -76,7 +76,7 @@ curl -X POST "http://localhost:8080/auth/token" -H "Content-Type: application/js
 
 1. **Clone or navigate to the project directory:**
    ```bash
-   cd c:\Users\ChayasinSaetia\chayasin-laptop\mcp-airflow
+   cd c:\{your_path_to}\mcp-airflow
    ```
 
 2. **Install dependencies:**
